@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:qiita_app/screens/ArticleScreen.dart';
+
+import '../components/Article.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -14,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    fetchArticles('articles_news');
   }
 
   Future<List> fetchArticles(String dataName) async {
@@ -28,37 +29,44 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget build(BuildContext context) {
-    return FutureBuilder<List>(
-        future: fetchArticles("articles_new"),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var data = snapshot.data;
-            return SingleChildScrollView(
-                child: Column(
-              children: data!.map((doc) {
-                return Card(
+    return Container(
+        child: Scaffold(
+      appBar: AppBar(
+        title: Text("Qiita App"),
+      ),
+      body: SafeArea(
+        child: FutureBuilder<List>(
+            future: fetchArticles("articles_most"),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                var data = snapshot.data;
+                return SingleChildScrollView(
                     child: Column(
-                  children: [
-                    Text(doc["title"]),
-                    Text(doc["tags"]),
-                    Text(doc["id"]),
-                    Text(doc["url"]),
-                    Text(doc["likes_count"].toString())
-                  ],
+                  children: data!.map((doc) {
+                    return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ArticleScreen(url: doc["url"]),
+                            ),
+                          );
+                        },
+                        child: Article(
+                            title: doc["title"],
+                            tags: doc["tags"],
+                            id: doc["id"],
+                            userURL: doc["user_url"],
+                            likesCount: doc["likes_count"]));
+                  }).toList(),
                 ));
-              }).toList(),
-            ));
-            // ListView.builder(
-            //     itemBuilder: (BuildContext context, int index) {
-            //   return Container(
-            //     height: 80,
-            //     child: Text(data![index]["title"]),
-            //   );
-            // });
-          }
-          return Container(
-            child: Text("a"),
-          );
-        });
+              }
+              return Container(
+                child: Text("Loading"),
+              );
+            }),
+      ),
+    ));
   }
 }

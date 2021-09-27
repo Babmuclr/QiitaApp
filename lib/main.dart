@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'screens/ArticleScreen.dart';
 import 'screens/HomeScreen.dart';
 
 void main() async {
@@ -22,14 +20,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       // home: ArticleScreen(),
-      home: QiitaApp(title: "Qiita App"),
+      home: QiitaApp(),
     );
   }
 }
 
 class QiitaApp extends StatefulWidget {
-  const QiitaApp({Key? key, required this.title}) : super(key: key);
-  final String title;
+  const QiitaApp({Key? key}) : super(key: key);
 
   @override
   _QiitaAppState createState() => _QiitaAppState();
@@ -38,12 +35,6 @@ class QiitaApp extends StatefulWidget {
 class _QiitaAppState extends State<QiitaApp> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ArticleScreen(),
-    ));
+    return HomeScreen();
   }
 }
