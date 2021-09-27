@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'ArticleScreen.dart';
+import 'screens/ArticleScreen.dart';
+import 'screens/HomeScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,78 +22,28 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       // home: ArticleScreen(),
-      home: MyHomePage(title: 'Qiita App'),
+      home: QiitaApp(title: "Qiita App"),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+class QiitaApp extends StatefulWidget {
+  const QiitaApp({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _QiitaAppState createState() => _QiitaAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _QiitaAppState extends State<QiitaApp> {
   @override
-  void initState() {
-    super.initState();
-    fetchArticles('articles_news');
-  }
-
-  Future<List> fetchArticles(String dataName) async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection(dataName).get();
-
-    List _articles = snapshot.docs.map((DocumentSnapshot doc) {
-      return doc.data();
-    }).toList();
-    return _articles;
-  }
-
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Container(
+        child: Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: FutureBuilder<List>(
-          future: fetchArticles("articles_new"),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              var data = snapshot.data;
-              return SingleChildScrollView(
-                  child: Column(
-                children: data!.map((doc) {
-                  return Card(
-                      child: Column(
-                    children: [
-                      Text(doc["title"]),
-                      Text(doc["tags"]),
-                      Text(doc["id"]),
-                      Text(doc["url"]),
-                      Text(doc["likes_count"].toString())
-                    ],
-                  ));
-                }).toList(),
-              ));
-              // ListView.builder(
-              //     itemBuilder: (BuildContext context, int index) {
-              //   return Container(
-              //     height: 80,
-              //     child: Text(data![index]["title"]),
-              //   );
-              // });
-            }
-            return Container(
-              child: Text("a"),
-            );
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
-    );
+      body: ArticleScreen(),
+    ));
   }
 }

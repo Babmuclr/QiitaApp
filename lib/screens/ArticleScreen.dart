@@ -9,18 +9,17 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
-  late WebViewController _controller;
   @override
-  void initState() {
-    super.initState();
-  }
+  // void initState() {
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: WebView(
         initialUrl: 'https://flutter.dev',
-        javascriptMode: JavascriptMode.unrestricted,
+        // javascriptMode: JavascriptMode.unrestricted,
       ),
     );
   }
