@@ -58,12 +58,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                           id: doc["id"],
                           url: doc["url"],
                           userURL: doc["user_url"],
-                          likesCount: doc["likes_count"]));
+                          likesCount: doc["likes_count"],
+                          isFavorite: true));
                 }).toList(),
               ));
             }
             return Container(
-              child: Text("Loading"),
+              child: CircularProgressIndicator(),
             );
           }),
     );

@@ -8,6 +8,7 @@ import 'dart:convert';
 class Article extends StatefulWidget {
   final String title, author, tags, userURL, url, id;
   final int likesCount;
+  final bool isFavorite;
 
   const Article(
       {Key? key,
@@ -17,7 +18,8 @@ class Article extends StatefulWidget {
       required this.userURL,
       required this.url,
       required this.id,
-      required this.likesCount})
+      required this.likesCount,
+      this.isFavorite = false})
       : super(key: key);
   @override
   _ArticleState createState() => _ArticleState();
@@ -46,13 +48,11 @@ class _ArticleState extends State<Article> {
     String _jsonString = jsonEncode(_jsonData);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> _favoriteList = prefs.getStringList("favorite") ?? [];
-    if (prefs.getString(widget.id) == null && !isLiked) {
+    if (prefs.getString(widget.id) == null) {
       prefs.setString(widget.id, _jsonString);
       _favoriteList.add(widget.id);
       prefs.setStringList("favorite", _favoriteList);
-    }
-
-    if (prefs.getString(widget.id) != null && isLiked) {
+    } else if (prefs.getString(widget.id) != null) {
       prefs.remove(widget.id);
       _favoriteList.remove(widget.id);
       prefs.setStringList("favorite", _favoriteList);
@@ -169,13 +169,19 @@ class _ArticleState extends State<Article> {
                       dotSecondaryColor: Color(0xff0099cc),
                     ),
                     likeBuilder: (bool isLiked) {
-                      return Icon(
-                        Icons.favorite,
-                        color: isLiked ? Colors.pinkAccent : Colors.grey,
-                        size: 18,
-                      );
+                      return !widget.isFavorite
+                          ? Icon(
+                              Icons.favorite,
+                              color: isLiked ? Colors.pinkAccent : Colors.grey,
+                              size: 18,
+                            )
+                          : Icon(
+                              FontAwesomeIcons.trash,
+                              color: isLiked ? Colors.green : Colors.grey,
+                              size: 18,
+                            );
                     },
-                    likeCount: widget.likesCount,
+                    likeCount: widget.isFavorite ? null : widget.likesCount,
                   ),
                 ),
               ),
