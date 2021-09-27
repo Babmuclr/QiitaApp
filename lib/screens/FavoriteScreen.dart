@@ -1,38 +1,40 @@
 import 'package:flutter/material.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:qiita_app/screens/ArticleScreen.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../components/Article.dart';
 
-class HomeScreen extends StatefulWidget {
-  final String collectionName;
-  HomeScreen({Key? key, required this.collectionName}) : super(key: key);
+class FavoriteScreen extends StatefulWidget {
+  FavoriteScreen({Key? key}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _FavoriteScreenState createState() => _FavoriteScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
   void initState() {
     super.initState();
   }
 
-  Future<List> fetchArticles(String dataName) async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection(dataName).get();
+  Future<List> fetchArticles() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> _favoriteList = prefs.getStringList("favorite") ?? [];
 
-    List _articles = snapshot.docs.map((DocumentSnapshot doc) {
-      return doc.data();
-    }).toList();
+    List _articles = [];
+    _favoriteList.forEach((id) {
+      dynamic _jsonData = jsonDecode(prefs.getString(id) ?? "");
+      _jsonData["id"] = id;
+      _articles.add(_jsonData);
+    });
     return _articles;
   }
 
   Widget build(BuildContext context) {
     return SafeArea(
       child: FutureBuilder<List>(
-          future: fetchArticles(widget.collectionName),
+          future: fetchArticles(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var data = snapshot.data;

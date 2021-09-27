@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qiita_app/tags.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class Article extends StatefulWidget {
-  final String title, id, tags, userURL;
+  final String title, author, tags, userURL, url, id;
   final int likesCount;
 
   const Article(
       {Key? key,
       required this.title,
       required this.tags,
-      required this.id,
+      required this.author,
       required this.userURL,
+      required this.url,
+      required this.id,
       required this.likesCount})
       : super(key: key);
   @override
@@ -30,9 +34,36 @@ class _ArticleState extends State<Article> {
     );
   }
 
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    final Map<String, dynamic> _jsonData = {
+      "title": widget.title,
+      "tags": widget.tags,
+      "likes_count": widget.likesCount,
+      "user_url": widget.userURL,
+      "author": widget.author,
+      "url": widget.url,
+    };
+    String _jsonString = jsonEncode(_jsonData);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> _favoriteList = prefs.getStringList("favorite") ?? [];
+    if (prefs.getString(widget.id) == null && !isLiked) {
+      prefs.setString(widget.id, _jsonString);
+      _favoriteList.add(widget.id);
+      prefs.setStringList("favorite", _favoriteList);
+    }
+
+    if (prefs.getString(widget.id) != null && isLiked) {
+      prefs.remove(widget.id);
+      _favoriteList.remove(widget.id);
+      prefs.setStringList("favorite", _favoriteList);
+    }
+    return !isLiked;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
+      shadowColor: Colors.green,
       child: Row(
         children: [
           Padding(
@@ -82,7 +113,7 @@ class _ArticleState extends State<Article> {
                           Container(
                             width: 160,
                             child: Text(
-                              "@ " + widget.id,
+                              "@ " + widget.author,
                               style: TextStyle(
                                 fontFamily: 'Helvetica',
                                 fontSize: 12,
@@ -128,6 +159,7 @@ class _ArticleState extends State<Article> {
                 child: Container(
                   alignment: Alignment.centerLeft,
                   child: LikeButton(
+                    onTap: onLikeButtonTapped,
                     padding: EdgeInsets.all(8.0),
                     size: 18,
                     circleColor: CircleColor(

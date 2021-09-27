@@ -9,16 +9,12 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
-  // void initState() {
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Qiita App"),
+          title: Text("Qiita News"),
         ),
         body: WebView(
           initialUrl: widget.url,

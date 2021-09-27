@@ -16,6 +16,7 @@ dependencies:
   webview_flutter: ^2.1.0
   like_button: ^2.0.3
   font_awesome_flutter: ^9.1.0
+  shared_preferences: ^2.0.8
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +26,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/img/
+    - assets/json/
