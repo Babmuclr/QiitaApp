@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class Article extends StatefulWidget {
-  final String title, author, tags, userURL, url, id;
+  final String title, author, tags, url, id;
   final int likesCount;
   final bool isFavorite;
 
@@ -15,7 +15,6 @@ class Article extends StatefulWidget {
       required this.title,
       required this.tags,
       required this.author,
-      required this.userURL,
       required this.url,
       required this.id,
       required this.likesCount,
@@ -41,7 +40,6 @@ class _ArticleState extends State<Article> {
       "title": widget.title,
       "tags": widget.tags,
       "likes_count": widget.likesCount,
-      "user_url": widget.userURL,
       "author": widget.author,
       "url": widget.url,
     };
@@ -103,17 +101,21 @@ class _ArticleState extends State<Article> {
                       padding: EdgeInsets.only(bottom: 4.0),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(widget.userURL),
-                            radius: 9,
+                          Container(
+                            width: 20,
+                            child: FaIcon(
+                              FontAwesomeIcons.userAlt,
+                              size: 16,
+                              color: Colors.green,
+                            ),
                           ),
                           SizedBox(
                             width: 10,
                           ),
                           Container(
-                            width: 160,
+                            width: 180,
                             child: Text(
-                              "@ " + widget.author,
+                              widget.author,
                               style: TextStyle(
                                 fontFamily: 'Helvetica',
                                 fontSize: 12,
@@ -129,16 +131,19 @@ class _ArticleState extends State<Article> {
                       width: 210,
                       child: Row(
                         children: [
-                          FaIcon(
-                            FontAwesomeIcons.tags,
-                            size: 16,
-                            color: Colors.grey,
+                          Container(
+                            width: 20,
+                            child: FaIcon(
+                              FontAwesomeIcons.tags,
+                              size: 16,
+                              color: Colors.green,
+                            ),
                           ),
                           SizedBox(
                             width: 10,
                           ),
                           Container(
-                            width: 160,
+                            width: 180,
                             child: Text(
                               widget.tags,
                               style: TextStyle(

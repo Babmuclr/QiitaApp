@@ -4,15 +4,30 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'screens/HomeScreen.dart';
 import 'screens/FavoriteScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+List<String> nameList = ["articles_new", "articles_pop", "articles_most"];
+List articleList = [[], [], []];
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await getArticles(nameList);
   runApp(MyApp());
 }
 
+Future<void> getArticles(List<String> dataList) async {
+  for (var i = 0; i < dataList.length; i++) {
+    String dataName = dataList[i];
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection(dataName).get();
+    articleList[i] = snapshot.docs.map((DocumentSnapshot doc) {
+      return doc.data();
+    }).toList();
+  }
+}
+
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,13 +51,13 @@ class _QiitaAppState extends State<QiitaApp> {
   int _currentIndex = 0;
   final _pageWidgets = [
     HomeScreen(
-      collectionName: "articles_new",
+      collectionIndex: 0,
     ),
     HomeScreen(
-      collectionName: "articles_pop",
+      collectionIndex: 1,
     ),
     HomeScreen(
-      collectionName: "articles_most",
+      collectionIndex: 2,
     ),
     FavoriteScreen(),
   ];
@@ -71,5 +86,5 @@ class _QiitaAppState extends State<QiitaApp> {
     );
   }
 
-  void _onItemTapped(int index) => setState(() => _currentIndex = index);
+  void _onItemTapped(int index) => {setState(() => _currentIndex = index)};
 }

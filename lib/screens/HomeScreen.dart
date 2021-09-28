@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:qiita_app/main.dart';
 import 'package:qiita_app/screens/ArticleScreen.dart';
 
 import '../components/Article.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String collectionName;
-  HomeScreen({Key? key, required this.collectionName}) : super(key: key);
+  final int collectionIndex;
+  HomeScreen({Key? key, required this.collectionIndex}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -19,51 +19,40 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  Future<List> fetchArticles(String dataName) async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection(dataName).get();
-
-    List _articles = snapshot.docs.map((DocumentSnapshot doc) {
-      return doc.data();
-    }).toList();
-    return _articles;
+  Future<void> _onRefresh() async {
+    setState(() {
+      getArticles(nameList);
+    });
   }
 
   Widget build(BuildContext context) {
     return SafeArea(
-      child: FutureBuilder<List>(
-          future: fetchArticles(widget.collectionName),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              var data = snapshot.data;
-              return SingleChildScrollView(
-                  child: Column(
-                children: data!.map((doc) {
-                  return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ArticleScreen(url: doc["url"]),
-                          ),
-                        );
-                      },
-                      child: Article(
-                          title: doc["title"],
-                          tags: doc["tags"],
-                          author: doc["author"],
-                          id: doc["id"],
-                          url: doc["url"],
-                          userURL: doc["user_url"],
-                          likesCount: doc["likes_count"]));
-                }).toList(),
-              ));
-            }
-            return Container(
-              child: CircularProgressIndicator(),
-            );
-          }),
-    );
+        child: RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: articleList[widget.collectionIndex].length,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ArticleScreen(
+                        url: articleList[widget.collectionIndex][index]["url"]),
+                  ),
+                );
+              },
+              child: Article(
+                  title: articleList[widget.collectionIndex][index]["title"],
+                  tags: articleList[widget.collectionIndex][index]["tags"],
+                  author: articleList[widget.collectionIndex][index]["author"],
+                  id: articleList[widget.collectionIndex][index]["id"],
+                  url: articleList[widget.collectionIndex][index]["url"],
+                  likesCount: articleList[widget.collectionIndex][index]
+                      ["likes_count"]));
+        },
+      ),
+    ));
   }
 }

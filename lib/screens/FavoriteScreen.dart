@@ -31,42 +31,48 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return _articles;
   }
 
+  Future<void> _onRefresh() async {
+    setState(() {});
+  }
+
   Widget build(BuildContext context) {
     return SafeArea(
-      child: FutureBuilder<List>(
-          future: fetchArticles(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              var data = snapshot.data;
-              return SingleChildScrollView(
-                  child: Column(
-                children: data!.map((doc) {
-                  return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ArticleScreen(url: doc["url"]),
-                          ),
-                        );
-                      },
-                      child: Article(
-                          title: doc["title"],
-                          tags: doc["tags"],
-                          author: doc["author"],
-                          id: doc["id"],
-                          url: doc["url"],
-                          userURL: doc["user_url"],
-                          likesCount: doc["likes_count"],
-                          isFavorite: true));
-                }).toList(),
-              ));
-            }
-            return Container(
-              child: CircularProgressIndicator(),
-            );
-          }),
+      child: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: FutureBuilder<List>(
+            future: fetchArticles(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                var data = snapshot.data;
+                return SingleChildScrollView(
+                    child: Column(
+                  children: data!.map((doc) {
+                    return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ArticleScreen(url: doc["url"]),
+                            ),
+                          );
+                        },
+                        child: Article(
+                            title: doc["title"],
+                            tags: doc["tags"],
+                            author: doc["author"],
+                            id: doc["id"],
+                            url: doc["url"],
+                            likesCount: doc["likes_count"],
+                            isFavorite: true));
+                  }).toList(),
+                ));
+              }
+              return Container(
+                child: CircularProgressIndicator(),
+              );
+            }),
+      ),
     );
   }
 }
