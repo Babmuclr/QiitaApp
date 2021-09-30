@@ -71,12 +71,11 @@ class _QiitaAppState extends State<QiitaApp> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.green,
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.photo_album), label: 'Album'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.favorite), label: 'Favorite'),
+              icon: Icon(Icons.new_releases), label: '最新記事'),
+          BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: '注目記事'),
+          BottomNavigationBarItem(icon: Icon(Icons.star), label: '人気記事'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'お気に入り'),
         ],
         currentIndex: _currentIndex,
         fixedColor: Colors.white,

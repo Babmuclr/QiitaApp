@@ -50,12 +50,16 @@ class _ArticleState extends State<Article> {
       prefs.setString(widget.id, _jsonString);
       _favoriteList.add(widget.id);
       prefs.setStringList("favorite", _favoriteList);
-    } else if (prefs.getString(widget.id) != null) {
+    } else if (prefs.getString(widget.id) != null && widget.isFavorite) {
       prefs.remove(widget.id);
       _favoriteList.remove(widget.id);
       prefs.setStringList("favorite", _favoriteList);
     }
-    return !isLiked;
+    if (widget.isFavorite) {
+      return !isLiked;
+    } else {
+      return true;
+    }
   }
 
   @override
